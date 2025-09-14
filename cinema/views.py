@@ -36,7 +36,6 @@ class GenreViewSet(
 ):
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
-    authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAdminOrIfAuthenticatedReadOnly,)
 
 
@@ -47,7 +46,6 @@ class ActorViewSet(
 ):
     queryset = Actor.objects.all()
     serializer_class = ActorSerializer
-    authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAdminOrIfAuthenticatedReadOnly,)
 
 
@@ -58,8 +56,6 @@ class CinemaHallViewSet(
 ):
     queryset = CinemaHall.objects.all()
     serializer_class = CinemaHallSerializer
-    authentication_classes = (TokenAuthentication,)
-    permission_classes = (IsAdminOrIfAuthenticatedReadOnly,)
 
 
 class MovieViewSet(
@@ -70,8 +66,7 @@ class MovieViewSet(
 ):
     queryset = Movie.objects.prefetch_related("genres", "actors")
     serializer_class = MovieSerializer
-    authentication_classes = (TokenAuthentication,)
-    permission_classes = (IsAdminOrIfAuthenticatedReadOnly,)
+
 
     @staticmethod
     def _params_to_ints(qs):
@@ -98,26 +93,27 @@ class MovieViewSet(
             queryset = queryset.filter(actors__id__in=actors_ids)
 
         return queryset.distinct()
-    @extend_schema(
-    parameters = [
-        OpenApiParameter(
-            name="title",
-            type=str,
-            description="filter by title",
-            required=False,
-        ),
-        OpenApiParameter(
-            name="genres",
-            type={"type": "array", "items": {"type": "number"}},
-            description="filter by genres",
-        ),
-        OpenApiParameter(
-            name="actors",
-            type={"type": "array", "items": {"type": "number"}},
-            description="filter by actors",
-        ),
 
-    ])
+    @extend_schema(
+        parameters = [
+            OpenApiParameter(
+                name="title",
+                type=str,
+                description="filter by title",
+                required=False,
+            ),
+            OpenApiParameter(
+                name="genres",
+                type={"type": "array", "items": {"type": "number"}},
+                description="filter by genres",
+            ),
+            OpenApiParameter(
+                name="actors",
+                type={"type": "array", "items": {"type": "number"}},
+                description="filter by actors",
+            ),
+
+        ])
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
 
@@ -163,8 +159,7 @@ class MovieSessionViewSet(viewsets.ModelViewSet):
         )
     )
     serializer_class = MovieSessionSerializer
-    authentication_classes = (TokenAuthentication,)
-    permission_classes = (IsAdminOrIfAuthenticatedReadOnly,)
+
 
     def get_queryset(self):
         date = self.request.query_params.get("date")
@@ -224,7 +219,6 @@ class OrderViewSet(
     )
     serializer_class = OrderSerializer
     pagination_class = OrderPagination
-    authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
